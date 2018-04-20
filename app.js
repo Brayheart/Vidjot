@@ -8,7 +8,7 @@ app.set('view engine', 'handlebars');
 
 //index route
 app.get('/', (req, res) => {
-    const title = 'Welcome11';
+    const title = 'Welcome';
     res.render('index', {
         title: title
     });
