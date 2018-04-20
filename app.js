@@ -32,6 +32,11 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
+//Add Idea Form
+app.get('/ideas/add', (req, res) => {
+    res.render('ideas/add');
+});
+
 app.listen(3000, () => {
     console.log('port is listening on port 3000!')
 })
