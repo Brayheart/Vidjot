@@ -1,5 +1,5 @@
 
-
+const methodOverride = require('method-override')
 const express = require('express');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
@@ -25,11 +25,13 @@ app.set('view engine', 'handlebars');
 
 //bodyparser middlewear
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
+//Method Override Middleware
+app.use(methodOverride('_method'))
 
 //index route
 app.get('/', (req, res) => {
@@ -60,6 +62,18 @@ app.get('/ideas/add', (req, res) => {
     res.render('ideas/add');
 });
 
+//Edit Idea Form
+app.get('/ideas/edit/:id', (req, res) => {
+    idea.findOne({
+        _id: req.params.id
+    })
+    .then(idea => {
+        res.render('ideas/edit', {
+            idea:idea
+        });
+    });
+});
+
 //Process form
 app.post('/ideas', (req, res) => {
     let errors = [];
@@ -88,7 +102,12 @@ app.post('/ideas', (req, res) => {
                 res.redirect('/ideas');
             })
     }
-})
+});
+
+//edit form process
+app.put('/ideas/:id', (req, res) => {
+    res.send('PUT')
+});
 
 app.listen(3000, () => {
     console.log('port is listening on port 3000!')
