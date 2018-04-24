@@ -125,6 +125,16 @@ app.put('/ideas/:id', (req, res) => {
     );
 });
 
+//Delete idea 
+app.delete('/ideas/:id', (req,res) => {
+    idea.remove({
+        _id: req.params.id
+    })
+    .then(() => {
+        res.redirect('/ideas');
+    })
+})
+
 app.listen(3000, () => {
     console.log('port is listening on port 3000!')
 })
