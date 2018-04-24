@@ -1,5 +1,6 @@
 
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
+const path = require('path');
 const express = require('express');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
@@ -23,13 +24,15 @@ mongoose.connect('mongodb://localhost/vidjot-dev')
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars'); 
 
-
 //bodyparser middlewear
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+
+//Static Folder
+app.use(express.static(path.join(__dirname, 'public')))
 
 //Method Override Middleware for put request
 app.use(methodOverride('_method'))
