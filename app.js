@@ -11,6 +11,7 @@ const app = express();
 
 //Load Routes
 const ideas = require('./routes/ideas');
+const users = require('./routes/users');
 
 //connect to mongoose
 //if deprication warning set mongoose promise to global promise
@@ -64,19 +65,9 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
-
-//User Login Route
-app.get('/users/login', (req, res) => {
-    
-});
-
-//User Register Route
-app.get('/users/register', (req, res) => {
-
-});
-
 //Use Routes
 app.use('/ideas', ideas);
+app.use('/users', users);
 
 app.listen(3000, () => {
     console.log('port is listening on port 3000!')
