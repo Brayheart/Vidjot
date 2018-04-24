@@ -7,19 +7,16 @@ const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 
-
-
 const app = express();
+
+//Load Routes
+const ideas = require('./routes/ideas');
 
 //connect to mongoose
 //if deprication warning set mongoose promise to global promise
 mongoose.connect('mongodb://localhost/vidjot-dev')
 .then(() => console.log('MongoDB connected!'))
 .catch(err => console.log(err));
-
-//Load Idea Model
-require('./models/Ideas');
-const idea = mongoose.model('ideas');
 
 //handlebars middlewear
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -67,97 +64,19 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
-//Idea Index Page
-app.get('/ideas', (req, res) => {
-    idea.find({})
-        .sort({date:'desc'})
-        .then(ideas => {
-            res.render('ideas/index', {
-                ideas:ideas
-            });
-        })
-})
 
-//Add Idea Form
-app.get('/ideas/add', (req, res) => {
-    res.render('ideas/add');
-});
-
-//Edit Idea Form
-app.get('/ideas/edit/:id', (req, res) => {
-    idea.findOne({
-        _id: req.params.id
-    })
-    .then(idea => {
-        res.render('ideas/edit', {
-            idea:idea
-        });
-    });
-});
-
-//Post request to mongodb
-app.post('/ideas', (req, res) => {
-    //error handling
-    let errors = [];
+//User Login Route
+app.get('/users/login', (req, res) => {
     
-    if (!req.body.title) {
-        errors.push({text: 'Please add a title'})
-    }
-    if (!req.body.details) {
-        errors.push({text: 'Please add some details'})
-    }
-
-    if (errors.length > 0) {
-        res.render('ideas/add', {
-            errors: errors,
-            title: req.body.title,
-            details: req.body.details
-        });
-    //if no errors
-    } else {
-        const newUser = {
-            title: req.body.title,
-            details: req.body.details
-        }
-        new idea(newUser)
-            .save()
-            .then(idea => {
-                req.flash('success_msg', 'Video Idea Added');
-                res.redirect('/ideas');
-            })
-    }
 });
 
-//edit form process
-app.put('/ideas/:id', (req, res) => {
-    idea.findOne({
-        _id: req.params.id
-    })
-    .then(
-        idea => {
-            //new values
-            idea.title = req.body.title;
-            idea.details = req.body.details;
+//User Register Route
+app.get('/users/register', (req, res) => {
 
-            idea.save()
-                .then(idea => {
-                    req.flash('success_msg', 'Video Idea Updated');
-                    res.redirect('/ideas')
-                })
-        }
-    );
 });
 
-//Delete idea 
-app.delete('/ideas/:id', (req,res) => {
-    idea.remove({
-        _id: req.params.id
-    })
-    .then(() => { 
-        req.flash('success_msg', 'Video Idea Removed');
-        res.redirect('/ideas');
-    })
-})
+//Use Routes
+app.use('/ideas', ideas);
 
 app.listen(3000, () => {
     console.log('port is listening on port 3000!')
