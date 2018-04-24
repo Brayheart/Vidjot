@@ -3,7 +3,10 @@ const methodOverride = require('method-override')
 const express = require('express');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const session = require('express-session');
+
 
 
 const app = express();
@@ -32,6 +35,24 @@ app.use(bodyParser.json());
 
 //Method Override Middleware for put request
 app.use(methodOverride('_method'))
+
+//Express Sessions Middleware
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+}));
+
+//Flash Middleware
+app.use(flash());
+
+//Global Variables flash message handling
+app.use(function(req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 //index route
 app.get('/', (req, res) => {
@@ -131,6 +152,7 @@ app.delete('/ideas/:id', (req,res) => {
         _id: req.params.id
     })
     .then(() => {
+        req.flash('success_msg', 'Video Idea Removed');
         res.redirect('/ideas');
     })
 })
