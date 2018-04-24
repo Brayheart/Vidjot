@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-//Method Override Middleware
+//Method Override Middleware for put request
 app.use(methodOverride('_method'))
 
 //index route
@@ -74,8 +74,9 @@ app.get('/ideas/edit/:id', (req, res) => {
     });
 });
 
-//Process form
+//Post request to mongodb
 app.post('/ideas', (req, res) => {
+    //error handling
     let errors = [];
     
     if (!req.body.title) {
@@ -91,6 +92,7 @@ app.post('/ideas', (req, res) => {
             title: req.body.title,
             details: req.body.details
         });
+    //if no errors
     } else {
         const newUser = {
             title: req.body.title,
@@ -106,7 +108,21 @@ app.post('/ideas', (req, res) => {
 
 //edit form process
 app.put('/ideas/:id', (req, res) => {
-    res.send('PUT')
+    idea.findOne({
+        _id: req.params.id
+    })
+    .then(
+        idea => {
+            //new values
+            idea.title = req.body.title;
+            idea.details = req.body.details;
+
+            idea.save()
+                .then(idea => {
+                    res.redirect('/ideas')
+                })
+        }
+    );
 });
 
 app.listen(3000, () => {
