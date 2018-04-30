@@ -7,12 +7,16 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
 
 const app = express();
 
 //Load Routes
 const ideas = require('./routes/ideas');
 const users = require('./routes/users');
+
+//Passport config
+require('./config/passport')(passport);
 
 //connect to mongoose
 //if deprication warning set mongoose promise to global promise
