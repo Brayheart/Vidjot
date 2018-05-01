@@ -17,10 +17,12 @@ const users = require('./routes/users');
 
 //Passport config
 require('./config/passport')(passport);
+//DB config
+const db = require('./config/database');
 
 //connect to mongoose
 //if deprication warning set mongoose promise to global promise
-mongoose.connect('mongodb://localhost/vidjot-dev')
+mongoose.connect(db.mongoURI)
 .then(() => console.log('MongoDB connected!'))
 .catch(err => console.log(err));
 
@@ -81,6 +83,8 @@ app.get('/about', (req, res) => {
 app.use('/ideas', ideas);
 app.use('/users', users);
 
-app.listen(3000, () => {
-    console.log('port is listening on port 3000!')
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`port is listening on port ${port}!`)
 })
