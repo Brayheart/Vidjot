@@ -10,7 +10,7 @@ const idea = mongoose.model('ideas');
 
 //Idea Index Page
 router.get('/', ensureAuthenticated, (req, res) => {
-    idea.find({})
+    idea.find({user: req.user.id})//only retrieves ideas from user id
         .sort({ date: 'desc' })
         .then(ideas => {
             res.render('ideas/index', {
@@ -30,9 +30,14 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
         _id: req.params.id
     })
         .then(idea => {
+            if(idea.user != req.user.id){
+                req.flash('error_msg', 'Not Authroized');
+                res.redirect('/ideas');
+            } else {
             res.render('ideas/edit', {
                 idea: idea
             });
+        }
         });
 });
 
@@ -58,7 +63,8 @@ router.post('/', ensureAuthenticated, (req, res) => {
     } else {
         const newUser = {
             title: req.body.title,
-            details: req.body.details
+            details: req.body.details,
+            user: req.user.id
         }
         new idea(newUser)
             .save()
